@@ -1,73 +1,52 @@
-# SignalWire Webhook Cloud Endpoint
+# 🚀 SignalWire Webhook - One-Click Deploy
 
-This is a serverless webhook endpoint for handling SignalWire voice calls, deployed on Vercel.
+## ⚡ **INSTANT DEPLOY TO RAILWAY**
 
-## Features
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/python-flask?referralCode=alphasec)
 
-- ✅ Handles SignalWire webhook events
-- ✅ Generates LAML/TwiML for IVR navigation
-- ✅ Extracts balance information from speech
-- ✅ Serverless deployment (no server management)
-- ✅ Automatic HTTPS
-- ✅ Global edge deployment
+👆 **Click this button above** → Railway will automatically:
+- Create your account (free)
+- Deploy your webhook 
+- Give you a live URL
+- Takes 60 seconds total!
 
-## Quick Deploy
+## 📋 **After Deployment:**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/signalwire-webhook)
+1. **Copy Your Railway URL** (something like `https://signalwire-webhook-production.railway.app`)
 
-## Manual Deployment
+2. **Update Your Balance Checker Config:**
+   ```python
+   # In balance-checker-project/config.py, line 18:
+   WEBHOOK_BASE_URL = "https://your-railway-url.railway.app"
+   ```
 
-1. **Install Vercel CLI:**
+3. **Test Your Webhook:**
    ```bash
-   npm install -g vercel
+   curl https://your-railway-url.railway.app/health
    ```
+   Should return: `{"status": "healthy"}`
 
-2. **Login to Vercel:**
+4. **Run Your Balance Checker:**
    ```bash
-   vercel login
+   cd balance-checker-project
+   python main.py
    ```
 
-3. **Deploy:**
-   ```bash
-   cd cloud-webhook
-   vercel
-   ```
+## 🔄 **Alternative: GitHub Deploy**
 
-4. **Your webhook URL will be:**
-   ```
-   https://your-project-name.vercel.app/api/voice
-   ```
+If the button doesn't work:
+1. Go to [railway.app](https://railway.app) 
+2. Click "Deploy from GitHub"
+3. Connect this repository
+4. Select the `cloud-webhook` folder
+5. Deploy!
 
-## Usage
+## ✅ **Your Webhook Endpoints:**
 
-Once deployed, update your balance checker configuration:
+- **Health Check:** `https://your-url.railway.app/health`
+- **Voice Webhook:** `https://your-url.railway.app/voice` (used by SignalWire)
+- **Status Webhook:** `https://your-url.railway.app/status` (call status updates)
 
-```python
-# In your config.py
-WEBHOOK_BASE_URL = "https://your-project-name.vercel.app"
-```
+---
 
-## Webhook Endpoints
-
-- `POST /api/voice` - Main webhook endpoint for SignalWire calls
-
-## Environment Variables
-
-For production deployment, you may want to add:
-
-- `CARD_DATABASE_URL` - Database connection for card information
-- `LOG_LEVEL` - Logging level (default: INFO)
-
-## Monitoring
-
-- View logs in Vercel dashboard
-- Monitor function performance
-- Track webhook events
-
-## Local Development
-
-```bash
-vercel dev
-```
-
-This will start a local development server at `http://localhost:3000` 
+**That's it! Your webhook is now hosted in the cloud and ready to receive SignalWire calls.** 🎉 

@@ -17,7 +17,7 @@ LOG_FILE = "balance_checker.log"  # Application log file
 
 # Webhook Server
 WEBHOOK_PORT = 8080           # Port for webhook server
-WEBHOOK_BASE_URL = "https://your-webhook.railway.app"      # Replace with your deployed cloud webhook URL
+WEBHOOK_BASE_URL = "https://your-webhook.railway.app"      # 👈 REPLACE THIS with your Railway URL (e.g., https://signalwire-webhook-production.railway.app)
 
 # Call Behavior - Updated for specific IVR sequence
 CALL_TIMEOUT = 60             # Reduced from 120 to prevent resource holding
