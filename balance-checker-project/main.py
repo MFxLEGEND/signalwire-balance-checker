@@ -84,12 +84,12 @@ class BalanceChecker:
             result = subprocess.run(['railway', '--version'], 
                                    capture_output=True, text=True, shell=True)
             if result.returncode == 0:
-                print("✅ Railway CLI already installed")
+                print("✅ Railway CLI ready")
                 return True
         except:
             pass
         
-        print("📦 Installing Railway CLI...")
+        print("📦 Installing Railway CLI (this may take 30 seconds)...")
         try:
             # Install Railway CLI via npm
             result = subprocess.run(['npm', 'install', '-g', '@railway/cli'], 
@@ -98,7 +98,9 @@ class BalanceChecker:
                 print("✅ Railway CLI installed successfully")
                 return True
             else:
-                print(f"❌ Failed to install Railway CLI: {result.stderr}")
+                print(f"❌ Failed to install Railway CLI")
+                print(f"   Error: {result.stderr.strip()}")
+                print("💡 Please ensure Node.js is installed: https://nodejs.org")
                 return False
         except Exception as e:
             print(f"❌ Error installing Railway CLI: {e}")
@@ -201,17 +203,13 @@ class BalanceChecker:
             print("✅ Webhook URL already configured")
             return True
         
-        print("🔍 Detected placeholder webhook URL - setting up automatic deployment...")
+        print("🔍 Detected placeholder webhook URL - starting automatic deployment...")
         print("\n" + "="*60)
         print("🚀 AUTOMATIC RAILWAY WEBHOOK DEPLOYMENT")
         print("="*60)
-        
-        # Ask user for permission
-        response = input("\n🤖 Would you like to automatically deploy your webhook to Railway? (y/N): ")
-        if response.lower() not in ['y', 'yes']:
-            print("⏩ Skipping automatic deployment")
-            print("💡 You can manually deploy using: cd cloud-webhook && railway up")
-            return False
+        print("🤖 Auto-deploying webhook to Railway...")
+        print("   (This will take 1-2 minutes)")
+        print("="*60)
         
         # Install Railway CLI
         if not self._install_railway_cli():
@@ -237,10 +235,10 @@ class BalanceChecker:
             return False
         
         print("❌ Automatic deployment failed")
-        print("💡 You can manually deploy using:")
-        print("   1. cd cloud-webhook")
-        print("   2. railway login")
-        print("   3. railway up")
+        print("💡 Fallback options:")
+        print("   1. Restart the script (it will retry)")
+        print("   2. Manual deploy: cd cloud-webhook && railway login && railway up")
+        print("   3. Use one-click deploy: https://railway.app/template/python-flask")
         return False
     
     def setup_signalwire_client(self):
