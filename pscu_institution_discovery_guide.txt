@@ -1,0 +1,103 @@
+
+# PSCU Digital Experience Institution Discovery Guide
+
+## Overview
+This guide helps you find NEW banks and financial institutions using PSCU Digital Experience 
+card management platform that are NOT already in your current list.
+
+## Current Analysis
+Based on your CSV file, all institutions are using PSCU Digital Experience platform.
+
+## Search Strategies
+
+### 1. Web Search Queries
+Use these search terms in Google, Bing, or other search engines:
+
+- "PSCU Digital Experience credit union login"
+- "dxonline-apps-s1-cloud.pscu.com credit union"
+- "dxonline-apps-s2-cloud.pscu.com credit union"
+- "PSCU card management platform credit union"
+- "PSCU Digital Experience online banking"
+- "PSCU credit union portal login"
+- "PSCU member portal credit union"
+- "PSCU online banking credit union"
+- "PSCU digital banking credit union"
+- "PSCU card services credit union"
+- "PSCU payment systems credit union"
+- "PSCU financial services credit union"
+- "PSCU credit union technology"
+- "PSCU credit union platform"
+- "PSCU credit union system"
+- "PSCU credit union solution"
+- "PSCU credit union provider"
+- "PSCU credit union partner"
+- "PSCU credit union vendor"
+- "PSCU credit union technology partner"
+
+### 2. Industry Directories
+Search these directories for credit unions and banks:
+
+- NCUA Credit Union Directory: https://mapping.ncua.gov/
+- FDIC Bank Directory: https://banks.data.fdic.gov/
+- Credit Union National Association (CUNA) Directory
+- State Credit Union League directories
+- American Bankers Association (ABA) Directory
+
+### 3. Social Media and Forums
+- LinkedIn: Search for "PSCU" + "credit union" + "technology"
+- Twitter: Search for PSCU mentions by credit unions
+- Reddit: r/creditunions, r/banking
+- Credit union industry forums
+
+### 4. Conference and Event Lists
+- PSCU Annual Conference attendees
+- Credit Union conferences
+- Financial technology conferences
+- Banking industry events
+
+### 5. News and Press Releases
+- Search for "PSCU" + "partnership" + "credit union"
+- Search for "PSCU" + "implementation" + "credit union"
+- Search for "PSCU" + "upgrade" + "credit union"
+- Search for "PSCU" + "migration" + "credit union"
+
+### 6. Job Postings
+Search job sites for:
+- "PSCU" + "credit union" + "job"
+- "PSCU" + "bank" + "job"
+- "Digital Experience" + "credit union" + "job"
+- "Card management" + "credit union" + "job"
+
+### 7. Technology Vendor Lists
+- PSCU's official partner list
+- PSCU's customer success stories
+- PSCU's case studies
+- PSCU's white papers
+
+## URL Pattern Analysis
+PSCU Digital Experience URLs follow this pattern:
+- Base: https://dxonline-apps-s{1-10}-cloud.pscu.com
+- Path: /wps/portal/accesspoint/login
+- Parameter: ?req={unique_institution_identifier}
+
+## Verification Process
+When you find a potential new institution:
+
+1. Check if it's already in your CSV file
+2. Verify the URL redirects to PSCU Digital Experience
+3. Confirm it's a legitimate financial institution
+4. Test the login page functionality
+5. Add to your list with proper categorization
+
+## Tools and Resources
+- PSCU Official Website: https://www.pscu.com/
+- PSCU Digital Experience Documentation
+- Credit Union Industry Reports
+- Banking Technology Surveys
+- Financial Services Directories
+
+## Notes
+- PSCU serves over 1,500 credit unions
+- Not all PSCU customers use Digital Experience
+- Some institutions may use multiple platforms
+- URLs may change over time due to system updates

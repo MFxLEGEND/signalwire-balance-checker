@@ -1,0 +1,6 @@
+signalwire-python
+aiohttp
+psutil
+nest_asyncio
+pandas
+numpy 

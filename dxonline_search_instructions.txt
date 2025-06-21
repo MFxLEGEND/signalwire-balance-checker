@@ -1,0 +1,66 @@
+
+# Instructions for Finding New PSCU Digital Experience Institutions
+
+## Search Process:
+1. Use Google, Bing, or DuckDuckGo
+2. Search for each query below
+3. Visit the institution's website
+4. Look for mentions of "DX ONLINE", "dxonline-apps", or "PSCU Digital Experience"
+5. If found, check if institution is already in your CSV file
+6. If NOT in your CSV, add to the new discoveries list
+
+## Search Queries to Use:
+
+### Credit Unions:
+- credit union "DX ONLINE"
+- credit union "dxonline-apps"
+- credit union "PSCU Digital Experience"
+- federal credit union "DX ONLINE"
+- federal credit union "dxonline-apps"
+- community credit union "DX ONLINE"
+- community credit union "dxonline-apps"
+- teachers credit union "DX ONLINE"
+- teachers credit union "dxonline-apps"
+- employees credit union "DX ONLINE"
+- employees credit union "dxonline-apps"
+
+### Banks:
+- bank "DX ONLINE"
+- bank "dxonline-apps"
+- bank "PSCU Digital Experience"
+- savings and loan "DX ONLINE"
+- savings and loan "dxonline-apps"
+- mutual savings bank "DX ONLINE"
+- mutual savings bank "dxonline-apps"
+- community bank "DX ONLINE"
+- community bank "dxonline-apps"
+- national bank "DX ONLINE"
+- national bank "dxonline-apps"
+- state bank "DX ONLINE"
+- state bank "dxonline-apps"
+- trust company "DX ONLINE"
+- trust company "dxonline-apps"
+- bank and trust "DX ONLINE"
+- bank and trust "dxonline-apps"
+
+## What to Look For:
+- "DX ONLINE" mentioned in online banking instructions
+- "dxonline-apps" in any URL or link
+- "PSCU Digital Experience" in help pages
+- Card management portals that redirect to PSCU
+- Login pages that mention PSCU or Digital Experience
+
+## Cross-Reference Process:
+1. When you find a potential institution, check your existing CSV file
+2. Look for the institution name (cleaned of prefixes/suffixes)
+3. If it's NOT in your list, it's a new discovery
+4. Add it to your new discoveries with the website URL and PSCU mention found
+
+## Output Format:
+Institution Name | Website URL | PSCU Mention Found | Search Query Used
+
+## Notes:
+- Focus on credit unions and community banks
+- Check multiple pages on each institution's website
+- Look for both direct mentions and redirect links
+- Be thorough in cross-referencing to avoid duplicates

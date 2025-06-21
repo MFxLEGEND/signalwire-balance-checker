@@ -1,0 +1,20 @@
+{
+  "name": "conversational-ai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ai.js normal",
+    "slow": "node ai.js slow",
+    "fast": "node ai.js fast",
+    "voice": "node ai-with-voice.js",
+    "training": "node financial-training-ai.js",
+    "enhanced": "node enhanced-financial-training-ai.js",
+    "demo": "node demo-enhanced-training.js",
+    "gui": "node gui-server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

@@ -1,0 +1,78 @@
+{
+  "name": "cursor-conversational-ai",
+  "displayName": "Cursor Conversational AI",
+  "description": "Natural conversational AI with pauses and proper cadence",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:cursor-ai.startConversation",
+    "onCommand:cursor-ai.pauseConversation",
+    "onCommand:cursor-ai.resumeConversation"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "cursor-ai.startConversation",
+        "title": "Start AI Conversation",
+        "category": "Cursor AI"
+      },
+      {
+        "command": "cursor-ai.pauseConversation", 
+        "title": "Pause Conversation",
+        "category": "Cursor AI"
+      },
+      {
+        "command": "cursor-ai.resumeConversation",
+        "title": "Resume Conversation", 
+        "category": "Cursor AI"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "cursor-ai.startConversation",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v"
+      }
+    ],
+    "configuration": {
+      "title": "Cursor Conversational AI",
+      "properties": {
+        "cursorAI.openaiApiKey": {
+          "type": "string",
+          "description": "OpenAI API Key for voice integration"
+        },
+        "cursorAI.conversationPace": {
+          "type": "string",
+          "enum": ["slow", "normal", "fast"],
+          "default": "normal",
+          "description": "Natural conversation pacing"
+        },
+        "cursorAI.enableNaturalPauses": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable natural pauses in conversation"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "openai": "^4.0.0",
+    "ws": "^8.14.0",
+    "node-speaker": "^0.5.4",
+    "wav": "^1.0.2"
+  }
+} 

@@ -1,0 +1,25 @@
+# SignalWire and Communication
+signalwire>=2.1.1
+twilio>=6.54.0
+
+# Audio Processing
+PyAudio>=0.2.13
+
+# Async and HTTP
+asyncio>=3.4.3
+aiohttp>=3.9.1
+nest_asyncio>=1.5.6
+
+# Tunneling
+pyngrok>=7.0.0
+
+# Google Cloud Services
+google-cloud-speech>=2.4.1
+google-cloud-storage>=2.14.0
+
+# Web Framework
+flask>=2.0.0
+
+# Utilities
+requests>=2.25.0
+python-dotenv>=0.19.0 
