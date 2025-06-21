@@ -123,16 +123,36 @@ class BalanceChecker:
             original_dir = os.getcwd()
             os.chdir(webhook_dir)
             
-            # Check if already logged in
+            # Set Railway token as environment variable
+            railway_token = "6ce3ddc0-6d5c-41c8-9c16-dac5ba47b7a9"
+            os.environ['RAILWAY_TOKEN'] = railway_token
+            
+            # Check if already logged in or use token
             result = subprocess.run(['railway', 'whoami'], 
                                    capture_output=True, text=True, shell=True)
             
             if result.returncode != 0:
-                print("🔐 Logging into Railway (browser will open)...")
-                login_result = subprocess.run(['railway', 'login'], shell=True)
+                print("🔐 Authenticating with Railway using API token...")
+                # Login using the token
+                login_result = subprocess.run(['railway', 'login', '--token', railway_token], 
+                                            capture_output=True, text=True, shell=True)
                 if login_result.returncode != 0:
-                    print("❌ Railway login failed")
+                    print("❌ Railway authentication failed")
+                    print(f"   Error: {login_result.stderr.strip()}")
                     return None
+                print("✅ Railway authentication successful")
+            
+            # Create or link to project
+            print("🔗 Setting up Railway project...")
+            project_result = subprocess.run(['railway', 'project', 'create', '--name', 'signalwire-webhook'], 
+                                          capture_output=True, text=True, shell=True)
+            
+            if project_result.returncode != 0:
+                # Project might already exist, try to link
+                link_result = subprocess.run(['railway', 'link'], 
+                                           capture_output=True, text=True, shell=True, input='\n')
+                if link_result.returncode != 0:
+                    print("⚠️  Project setup had issues, continuing with deployment...")
             
             # Deploy the webhook
             print("🌐 Deploying to Railway cloud...")
@@ -140,11 +160,17 @@ class BalanceChecker:
                                          capture_output=True, text=True, shell=True)
             
             if deploy_result.returncode == 0:
+                print("✅ Deployment initiated successfully!")
+                
+                # Wait a moment and then get the domain
+                print("⏳ Waiting for deployment to complete...")
+                time.sleep(10)
+                
                 # Get the deployment URL
                 url_result = subprocess.run(['railway', 'domain'], 
                                           capture_output=True, text=True, shell=True)
                 
-                if url_result.returncode == 0:
+                if url_result.returncode == 0 and url_result.stdout.strip():
                     # Extract URL from output
                     output = url_result.stdout.strip()
                     url_match = re.search(r'https://[^\s]+', output)
@@ -154,11 +180,31 @@ class BalanceChecker:
                         print(f"🌐 URL: {deployed_url}")
                         return deployed_url
                 
-                print("✅ Deployment completed, but couldn't extract URL")
-                print("📋 Please check Railway dashboard for your webhook URL")
+                # If domain command didn't work, try to generate one
+                print("🔗 Generating public domain...")
+                domain_gen_result = subprocess.run(['railway', 'domain', 'generate'], 
+                                                 capture_output=True, text=True, shell=True)
+                
+                if domain_gen_result.returncode == 0:
+                    time.sleep(5)  # Wait for domain to propagate
+                    url_result = subprocess.run(['railway', 'domain'], 
+                                              capture_output=True, text=True, shell=True)
+                    if url_result.returncode == 0:
+                        output = url_result.stdout.strip()
+                        url_match = re.search(r'https://[^\s]+', output)
+                        if url_match:
+                            deployed_url = url_match.group(0)
+                            print(f"✅ Webhook deployed with generated domain!")
+                            print(f"🌐 URL: {deployed_url}")
+                            return deployed_url
+                
+                print("✅ Deployment completed!")
+                print("📋 Please check Railway dashboard for your webhook URL at: https://railway.app/dashboard")
+                print("🔍 Look for your 'signalwire-webhook' service")
                 return "DEPLOYED_BUT_URL_UNKNOWN"
             else:
-                print(f"❌ Deployment failed: {deploy_result.stderr}")
+                print(f"❌ Deployment failed")
+                print(f"   Error: {deploy_result.stderr.strip()}")
                 return None
                 
         except Exception as e:
