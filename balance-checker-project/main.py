@@ -5,9 +5,6 @@ import logging
 import signal
 import sys
 import time
-import subprocess
-import os
-import re
 from datetime import datetime
 from aiohttp import web
 from signalwire.rest import Client
@@ -67,225 +64,7 @@ class BalanceChecker:
         print(f"📞 Max Concurrent Calls: {config.CONCURRENT_CALLS}")
         print("="*70 + "\n")
     
-    def _check_webhook_deployment(self):
-        """Check if webhook needs to be deployed automatically."""
-        placeholder_urls = [
-            "https://your-webhook.railway.app",
-            "https://your-webhook-url.railway.app", 
-            "https://your-actual-railway-url.railway.app"
-        ]
-        
-        return config.WEBHOOK_BASE_URL in placeholder_urls
-    
-    def _install_railway_cli(self):
-        """Install Railway CLI if not present."""
-        try:
-            # Check if Railway CLI is already installed
-            result = subprocess.run(['railway', '--version'], 
-                                   capture_output=True, text=True, shell=True)
-            if result.returncode == 0:
-                print("✅ Railway CLI ready")
-                return True
-        except:
-            pass
-        
-        print("📦 Installing Railway CLI (this may take 30 seconds)...")
-        try:
-            # Install Railway CLI via npm
-            result = subprocess.run(['npm', 'install', '-g', '@railway/cli'], 
-                                   capture_output=True, text=True, shell=True)
-            if result.returncode == 0:
-                print("✅ Railway CLI installed successfully")
-                return True
-            else:
-                print(f"❌ Failed to install Railway CLI")
-                print(f"   Error: {result.stderr.strip()}")
-                print("💡 Please ensure Node.js is installed: https://nodejs.org")
-                return False
-        except Exception as e:
-            print(f"❌ Error installing Railway CLI: {e}")
-            print("💡 Please install Node.js first: https://nodejs.org")
-            return False
-    
-    def _deploy_webhook_to_railway(self):
-        """Automatically deploy webhook to Railway."""
-        webhook_dir = os.path.join(os.path.dirname(__file__), '..', 'cloud-webhook')
-        
-        if not os.path.exists(webhook_dir):
-            print("❌ cloud-webhook directory not found")
-            return None
-        
-        try:
-            print("🚀 Deploying webhook to Railway...")
-            print("   This may take 1-2 minutes...")
-            
-            # Change to webhook directory
-            original_dir = os.getcwd()
-            os.chdir(webhook_dir)
-            
-            # Set Railway token as environment variable
-            railway_token = "6ce3ddc0-6d5c-41c8-9c16-dac5ba47b7a9"
-            os.environ['RAILWAY_TOKEN'] = railway_token
-            
-            # Check if already logged in or use token
-            result = subprocess.run(['railway', 'whoami'], 
-                                   capture_output=True, text=True, shell=True)
-            
-            if result.returncode != 0:
-                print("🔐 Authenticating with Railway using API token...")
-                # Login using the token
-                login_result = subprocess.run(['railway', 'login', '--token', railway_token], 
-                                            capture_output=True, text=True, shell=True)
-                if login_result.returncode != 0:
-                    print("❌ Railway authentication failed")
-                    print(f"   Error: {login_result.stderr.strip()}")
-                    return None
-                print("✅ Railway authentication successful")
-            
-            # Create or link to project
-            print("🔗 Setting up Railway project...")
-            project_result = subprocess.run(['railway', 'project', 'create', '--name', 'signalwire-webhook'], 
-                                          capture_output=True, text=True, shell=True)
-            
-            if project_result.returncode != 0:
-                # Project might already exist, try to link
-                link_result = subprocess.run(['railway', 'link'], 
-                                           capture_output=True, text=True, shell=True, input='\n')
-                if link_result.returncode != 0:
-                    print("⚠️  Project setup had issues, continuing with deployment...")
-            
-            # Deploy the webhook
-            print("🌐 Deploying to Railway cloud...")
-            deploy_result = subprocess.run(['railway', 'up', '--detached'], 
-                                         capture_output=True, text=True, shell=True)
-            
-            if deploy_result.returncode == 0:
-                print("✅ Deployment initiated successfully!")
-                
-                # Wait a moment and then get the domain
-                print("⏳ Waiting for deployment to complete...")
-                time.sleep(10)
-                
-                # Get the deployment URL
-                url_result = subprocess.run(['railway', 'domain'], 
-                                          capture_output=True, text=True, shell=True)
-                
-                if url_result.returncode == 0 and url_result.stdout.strip():
-                    # Extract URL from output
-                    output = url_result.stdout.strip()
-                    url_match = re.search(r'https://[^\s]+', output)
-                    if url_match:
-                        deployed_url = url_match.group(0)
-                        print(f"✅ Webhook deployed successfully!")
-                        print(f"🌐 URL: {deployed_url}")
-                        return deployed_url
-                
-                # If domain command didn't work, try to generate one
-                print("🔗 Generating public domain...")
-                domain_gen_result = subprocess.run(['railway', 'domain', 'generate'], 
-                                                 capture_output=True, text=True, shell=True)
-                
-                if domain_gen_result.returncode == 0:
-                    time.sleep(5)  # Wait for domain to propagate
-                    url_result = subprocess.run(['railway', 'domain'], 
-                                              capture_output=True, text=True, shell=True)
-                    if url_result.returncode == 0:
-                        output = url_result.stdout.strip()
-                        url_match = re.search(r'https://[^\s]+', output)
-                        if url_match:
-                            deployed_url = url_match.group(0)
-                            print(f"✅ Webhook deployed with generated domain!")
-                            print(f"🌐 URL: {deployed_url}")
-                            return deployed_url
-                
-                print("✅ Deployment completed!")
-                print("📋 Please check Railway dashboard for your webhook URL at: https://railway.app/dashboard")
-                print("🔍 Look for your 'signalwire-webhook' service")
-                return "DEPLOYED_BUT_URL_UNKNOWN"
-            else:
-                print(f"❌ Deployment failed")
-                print(f"   Error: {deploy_result.stderr.strip()}")
-                return None
-                
-        except Exception as e:
-            print(f"❌ Error during deployment: {e}")
-            return None
-        finally:
-            # Return to original directory
-            os.chdir(original_dir)
-    
-    def _update_config_with_webhook_url(self, webhook_url):
-        """Update config.py with the new webhook URL."""
-        try:
-            config_path = os.path.join(os.path.dirname(__file__), 'config.py')
-            
-            # Read current config
-            with open(config_path, 'r') as f:
-                content = f.read()
-            
-            # Replace the webhook URL
-            old_pattern = r'WEBHOOK_BASE_URL = "https://[^"]*"'
-            new_line = f'WEBHOOK_BASE_URL = "{webhook_url}"'
-            
-            updated_content = re.sub(old_pattern, new_line, content)
-            
-            # Write back to file
-            with open(config_path, 'w') as f:
-                f.write(updated_content)
-            
-            # Update the config module in memory
-            config.WEBHOOK_BASE_URL = webhook_url
-            
-            print(f"✅ Config updated with webhook URL: {webhook_url}")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Failed to update config: {e}")
-            return False
-    
-    def setup_webhook_deployment(self):
-        """Handle automatic webhook deployment if needed."""
-        if not self._check_webhook_deployment():
-            print("✅ Webhook URL already configured")
-            return True
-        
-        print("🔍 Detected placeholder webhook URL - starting automatic deployment...")
-        print("\n" + "="*60)
-        print("🚀 AUTOMATIC RAILWAY WEBHOOK DEPLOYMENT")
-        print("="*60)
-        print("🤖 Auto-deploying webhook to Railway...")
-        print("   (This will take 1-2 minutes)")
-        print("="*60)
-        
-        # Install Railway CLI
-        if not self._install_railway_cli():
-            return False
-        
-        # Deploy webhook
-        deployed_url = self._deploy_webhook_to_railway()
-        
-        if deployed_url and deployed_url != "DEPLOYED_BUT_URL_UNKNOWN":
-            # Update config
-            if self._update_config_with_webhook_url(deployed_url):
-                print("\n" + "="*60)
-                print("✅ WEBHOOK DEPLOYMENT COMPLETE!")
-                print("="*60)
-                print(f"🌐 Your webhook is now live at: {deployed_url}")
-                print("🎉 Continuing with balance checking...")
-                print("="*60 + "\n")
-                return True
-        elif deployed_url == "DEPLOYED_BUT_URL_UNKNOWN":
-            print("\n⚠️  Deployment completed but URL detection failed")
-            print("📋 Please manually update config.py with your Railway URL")
-            print("🌐 Check your Railway dashboard for the webhook URL")
-            return False
-        
-        print("❌ Automatic deployment failed")
-        print("💡 Fallback options:")
-        print("   1. Restart the script (it will retry)")
-        print("   2. Manual deploy: cd cloud-webhook && railway login && railway up")
-        print("   3. Use one-click deploy: https://railway.app/template/python-flask")
-        return False
+
     
     def setup_signalwire_client(self):
         """Initialize SignalWire client with credentials from config."""
@@ -462,17 +241,11 @@ class BalanceChecker:
             print("🔧 Step 2: Setting up results file...")
             setup_results_file()
             
-            print("🔧 Step 3: Checking webhook deployment...")
-            if not self.setup_webhook_deployment():
-                print("⚠️  Webhook deployment required but not completed")
-                print("📋 Please deploy manually or restart with 'y' to auto-deploy")
-                return
-            
-            print("🔧 Step 4: Setting up SignalWire client...")
+            print("🔧 Step 3: Setting up SignalWire client...")
             self.setup_signalwire_client()
             
             # Load card data
-            print("📁 Step 5: Loading card data...")
+            print("📁 Step 4: Loading card data...")
             card_data = load_card_data(config.CARD_DATA_FILE)
             if not card_data:
                 print("❌ No card data found. Please check your data file.")
@@ -480,17 +253,17 @@ class BalanceChecker:
             print(f"✅ Loaded {len(card_data)} cards")
             
             # Start webhook server
-            print("🌐 Step 6: Starting webhook server...")
+            print("🌐 Step 5: Starting webhook server...")
             runner = await self.start_webhook_server()
             
             # Give the webhook server time to fully initialize
-            print("⏳ Step 7: Initializing webhook server...")
+            print("⏳ Step 6: Initializing webhook server...")
             await asyncio.sleep(2)
             print("✅ System ready for call processing!")
             
             try:
                 # Run the producer
-                print("🚀 Step 8: Running call producer...")
+                print("🚀 Step 7: Running call producer...")
                 await self.run_producer(card_data)
             finally:
                 # Cleanup webhook server
